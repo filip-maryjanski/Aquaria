@@ -108,7 +108,11 @@ void Texture::write(int tx, int ty, int w, int h, const unsigned char *pixels)
 					h,
 					GL_RGBA,
 					GL_UNSIGNED_BYTE,
+#ifdef __MORPHOS__
+					(void*)pixels
+#else
 					pixels
+#endif
 					);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -496,7 +500,11 @@ bool Texture::loadTGA(ImageTGA *imageTGA)
 
 #if defined(BBGE_BUILD_UNIX)
 typedef uint8_t byte;
+#ifdef __MORPHOS__
+#define WORD uint16_t
+#else
 typedef uint16_t WORD;
+#endif
 #endif
 
 

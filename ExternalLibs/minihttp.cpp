@@ -81,6 +81,10 @@ inline std::string _GetErrorStr(int e)
     return strerror(e);
 }
 
+#ifdef __MORPHOS__
+static struct Library *SocketBase;
+#endif
+
 bool InitNetwork()
 {
 #ifdef _WIN32
@@ -91,6 +95,14 @@ bool InitNetwork()
         return false;
     }
 #endif
+	
+#ifdef __MORPHOS__
+	if(!(SocketBase = OpenLibrary("bsdsocket.library", 0)))
+	{
+        traceprint("Failed to init socket base!\n");
+		return false;
+	}
+#endif
     return true;
 }
 
@@ -99,8 +111,35 @@ void StopNetwork()
 #ifdef _WIN32
     WSACleanup();
 #endif
+
+#ifdef __MORPHOS__
+	if(SocketBase)
+		CloseLibrary(SocketBase);
+#endif
 }
 
+#ifdef __MORPHOS__
+static bool _Resolve(const char *host, unsigned int port, struct sockaddr_in *addr)
+{
+	struct hostent *he;
+	
+	if((he = gethostbyname((const UBYTE*)host)))
+	{	
+		struct sockaddr_in serv_addr;
+	
+		memset(&serv_addr, 0, sizeof(serv_addr));
+	
+		serv_addr.sin_family = AF_INET;
+		serv_addr.sin_port = htons(port);
+		serv_addr.sin_addr = *((struct in_addr*)he->h_addr);
+		
+		memcpy(addr, &serv_addr, sizeof(serv_addr));
+		return true;
+	}
+	return false;
+}
+
+#else
 static bool _Resolve(const char *host, unsigned int port, struct sockaddr_in *addr)
 {
     char port_str[15];
@@ -129,6 +168,7 @@ static bool _Resolve(const char *host, unsigned int port, struct sockaddr_in *ad
     }
     return false;
 }
+#endif
 
 // FIXME: this does currently not handle links like:
 // http://example.com/index.html#pos
@@ -282,7 +322,11 @@ bool TcpSocket::open(const char *host /* = NULL */, unsigned int port /* = 0 */)
         return false;
     }
 
+#ifdef __MORPHOS__
+    if (connect(s, (sockaddr*)&addr, sizeof(sockaddr)))
+#else
     if (::connect(s, (sockaddr*)&addr, sizeof(sockaddr)))
+#endif
     {
         traceprint("CONNECT ERROR: %s\n", _GetErrorStr(_GetError()).c_str());
         return false;
@@ -301,7 +345,11 @@ bool TcpSocket::SendBytes(const char *str, unsigned int len)
     if(!SOCKETVALID(_s))
         return false;
     //traceprint("SEND: '%s'\n", str);
-    return ::send(_s, str, len, 0) >= 0;
+#ifdef __MORPHOS__
+	return send(_s, (CONST UBYTE *)str, len, 0) >= 0;
+#else
+	return ::send(_s, str, len, 0) >= 0;
+#endif
     // TODO: check _GetError()
 }
 
@@ -330,8 +378,11 @@ bool TcpSocket::update(void)
     if(!_inbuf)
         SetBufsizeIn(DEFAULT_BUFSIZE);
 
+#ifdef __MORPHOS__
+    int bytes = recv(_s, (UBYTE*)_writeptr, _writeSize, 0); // last char is used as string terminator
+#else
     int bytes = recv(_s, _writeptr, _writeSize, 0); // last char is used as string terminator
-
+#endif
     if(bytes > 0) // we received something
     {
         _inbuf[bytes] = 0;

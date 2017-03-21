@@ -262,7 +262,9 @@ void UserSettings::save()
 
 	}
 
-#if defined(BBGE_BUILD_UNIX)
+#if defined(__MORPHOS__)
+	doc.SaveFile(("PROGDIR:" + userSettingsFilename).c_str());
+#elif defined(BBGE_BUILD_UNIX)
 	doc.SaveFile((dsq->getPreferencesFolder() + "/" + userSettingsFilename).c_str());
 #elif defined(BBGE_BUILD_WINDOWS)
 	doc.SaveFile(userSettingsFilename.c_str());
@@ -303,7 +305,9 @@ void UserSettings::load(bool doApply, const std::string &overrideFile)
 {
 	std::string filename;
 
-#if defined(BBGE_BUILD_UNIX)
+#if defined __MORPHOS__
+	filename = "PROGDIR:" + userSettingsFilename;
+#elif defined(BBGE_BUILD_UNIX)
 	filename = dsq->getPreferencesFolder() + "/" + userSettingsFilename;
 #elif defined(BBGE_BUILD_WINDOWS)
 	if (!overrideFile.empty())

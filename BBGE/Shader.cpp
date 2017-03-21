@@ -22,6 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shader.h"
 #include "algorithmx.h"
 
+#ifdef __MORPHOS__
+#include <tgl/gl.h>
+#endif
+
 #ifdef BBGE_BUILD_SHADERS
 	// GL_ARB_shader_objects
 	PFNGLCREATEPROGRAMOBJECTARBPROC  glCreateProgramObjectARB  = NULL;
@@ -334,6 +338,7 @@ void Shader::loadSrc(const char *vertCode, const char *fragCode)
 
 void Shader::_setUniform(Uniform *u)
 {
+#ifndef __MORPHOS__
 	switch(u->type)
 	{
 		case GL_FLOAT:          glUniform1fvARB(u->location, 1, u->data.f); break;
@@ -345,6 +350,7 @@ void Shader::_setUniform(Uniform *u)
 		case GL_INT_VEC3_ARB:   glUniform3ivARB(u->location, 1, u->data.i); break;
 		case GL_INT_VEC4_ARB:   glUniform4ivARB(u->location, 1, u->data.i); break;
 	}
+#endif
 	u->dirty = false;
 }
 
@@ -375,6 +381,7 @@ bool Shader::Uniform::operator< (const Uniform& b) const
 
 void Shader::_queryUniforms()
 {
+#ifndef __MORPHOS__
 	glGetObjectParameterivARB(g_programObj, GL_OBJECT_ACTIVE_UNIFORMS_ARB , &numUniforms);
 
 	if (numUniforms <= 0)
@@ -418,6 +425,7 @@ void Shader::_queryUniforms()
 	std::sort(uniforms.begin(), uniforms.end());
 
 	uniformsDirty = true;
+#endif
 }
 
 int Shader::_getUniformIndex(const char *name)

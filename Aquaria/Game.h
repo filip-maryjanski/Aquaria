@@ -385,7 +385,7 @@ class SceneEditor : public ActionMapper
 public:
 	SceneEditor();
 	void init();
-	void shutdown();
+	void shut_down();
 	void toggle();
 	void toggle(bool on);
 	void update(float dt);

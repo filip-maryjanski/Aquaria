@@ -23,7 +23,7 @@ distribution.
 
 // Disabled LoadFile() functions to catch misuse - Aquaria uses its own VFS, not FILE* -- fg
 
-
+#include <locale.h>
 #include "tinyxml2.h"
 
 #include <new>		// yes, this one new style header, is in the Android SDK.
@@ -1592,6 +1592,12 @@ XMLDocument::XMLDocument( bool processEntities, Whitespace whitespace ) :
     _charBuffer( 0 )
 {
     _document = this;	// avoid warning about 'this' in initializer list
+/*
+ * We need to set locale to "C" as printf() and scanf() can use locale to
+ * determine how write/read %f and %lf. For example in French locales "1234.56"
+ * might be written as "1 234,56" causing XML to be invalid.
+ */
+    setlocale(LC_ALL, "C");
 }
 
 

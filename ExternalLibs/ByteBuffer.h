@@ -50,7 +50,7 @@ namespace ByteBufferTools
 		std::reverse(p, p + size);
 	}
 
-#if BB_IS_BIG_ENDIAN
+#if BB_IS_BIG_ENDIAN || defined(__MORPHOS__)
 	template<typename T> inline void ToLittleEndian(T& val) { EndianConvert<T>(&val); }
 	inline void ToLittleEndianRT(void *p, unsigned int size) { EndianConvertRT((char*)p, size); }
 	template<typename T> inline void ToBigEndian(T&) { }

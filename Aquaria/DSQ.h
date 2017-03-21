@@ -283,7 +283,7 @@ public:
 	const std::string& getPath() const;
 	const std::string& getName() const;
 	
-	void shutdown();
+	void shut_down();
 	bool isShuttingDown();
 
 	static bool loadModXML(XMLDocument *d, std::string modName);
@@ -898,7 +898,7 @@ public:
 	Continuity();
 	~Continuity() { clearIngredientData(); }
 	void init();
-	void shutdown();
+	void shut_down();
 	void initAvatar(Avatar *a);
 	void refreshAvatarData(Avatar *a);
 	void reset();
@@ -1249,7 +1249,7 @@ public:
 	~DSQ();
 
 	void init();
-	void shutdown();
+	void shut_down();
 	
 	void toggleInputGrabPlat(bool on);
 

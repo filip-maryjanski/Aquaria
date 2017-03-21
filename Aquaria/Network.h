@@ -36,7 +36,7 @@ namespace Network
 	// Once the download is finished, rq's notify() method  will be called in the next update.
 	void download(RequestData *rq);
 	void update();
-	void shutdown();
+	void shut_down();
 };
 
 

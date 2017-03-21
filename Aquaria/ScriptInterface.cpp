@@ -360,7 +360,7 @@ static void scriptError(lua_State *L, const std::string& msg)
 // memory location, be sure this is the case before running into undefined behavior later.
 // - The C++ standard allows offsetof() only on POD-types. Oh well, it probably works anyways.
 // If it does not compile for some reason, comment it out, hope for the best, and go ahead.
-#if !(defined(__GNUC__) && __GNUC__ <= 2)
+#if !(defined(__GNUC__) && __GNUC__ <= 2) && !defined(__MORPHOS__)
 static void compile_time_assertions()
 {
 #define oo(cls) offsetof(cls, _objtype)
@@ -8873,7 +8873,11 @@ luaFunc(appendUserDataPath)
 	std::string path = getString(L, 1);
 
 	if (!dsq->getUserDataFolder().empty())
+#ifdef __MORPHOS__
+		path = dsq->getUserDataFolder() + path;
+#else
 		path = dsq->getUserDataFolder() + "/" + path;
+#endif
 
 	luaReturnStr(path.c_str());
 }
@@ -11152,8 +11156,8 @@ void ScriptInterface::init()
 
 void ScriptInterface::reset()
 {
-	shutdown();
-	init();
+	this->shut_down();
+	this->init();
 }
 
 void *ScriptInterface::the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
@@ -11343,7 +11347,7 @@ int ScriptInterface::gcGetStats()
 	return lua_gc(baseState, LUA_GCCOUNT, 0);
 }
 
-void ScriptInterface::shutdown()
+void ScriptInterface::shut_down()
 {
 	destroyLuaVM(baseState);
 	baseState = NULL;

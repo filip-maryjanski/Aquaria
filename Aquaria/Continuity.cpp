@@ -2198,7 +2198,7 @@ void Continuity::init()
 	statsAndAchievements = new StatsAndAchievements;
 }
 
-void Continuity::shutdown()
+void Continuity::shut_down()
 {
 	if (statsAndAchievements)
 	{

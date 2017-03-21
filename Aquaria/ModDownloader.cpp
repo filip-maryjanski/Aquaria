@@ -109,7 +109,11 @@ ModDL::~ModDL()
 
 void ModDL::init()
 {
+#ifdef __MORPHOS__
+	tempDir = "PROGDIR:webcache";
+#else
 	tempDir = dsq->getUserDataFolder() + "/webcache";
+#endif
 	createDir(tempDir.c_str());
 }
 

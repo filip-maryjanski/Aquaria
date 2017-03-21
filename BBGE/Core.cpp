@@ -901,7 +901,7 @@ Core::Core(const std::string &filesystem, const std::string& extraDataDir, int n
 	if (userDataSubFolder.empty())
 		userDataSubFolder = appName;
 		
-#if defined(BBGE_BUILD_UNIX)
+#if defined(BBGE_BUILD_UNIX) && !defined(__MORPHOS__)
 	const char *envr = getenv("HOME");
 	if (envr == NULL)
         envr = ".";  // oh well.
@@ -924,8 +924,13 @@ Core::Core(const std::string &filesystem, const std::string& extraDataDir, int n
 	createDir(prefpath);
 
 #else
+#ifdef __MORPHOS__
+	debugLogPath = "PROGDIR:";
+	userDataFolder = "PROGDIR:";
+#else
 	debugLogPath = "";
 	userDataFolder = ".";
+#endif
 
 	#ifdef BBGE_BUILD_WINDOWS
 	{
@@ -1064,7 +1069,7 @@ void Core::initPlatform(const std::string &filesystem)
 	CFRelease(resourcesURL);
 	debugLog(path);
 	chdir(path);
-#elif defined(BBGE_BUILD_UNIX)
+#elif defined(BBGE_BUILD_UNIX) && !defined(__MORPHOS__)
 	if (!filesystem.empty())
 	{
 		if (chdir(filesystem.c_str()) == 0)
@@ -1113,6 +1118,9 @@ void Core::initPlatform(const std::string &filesystem)
 
 std::string Core::getPreferencesFolder()
 {
+#ifdef __MORPHOS__
+	return userDataFolder + "preferences";
+#endif
 #ifdef BBGE_BUILD_UNIX
 	return userDataFolder + "/preferences";
 #endif
@@ -1126,7 +1134,7 @@ std::string Core::getUserDataFolder()
 	return userDataFolder;
 }
 
-#if BBGE_BUILD_UNIX
+#if BBGE_BUILD_UNIX && !defined(__MORPHOS__)
 #include <sys/types.h>
 #include <pwd.h>
 #include <fcntl.h>
@@ -1177,7 +1185,7 @@ static int locateOneElement(char *buf)
 
 std::string Core::adjustFilenameCase(const char *_buf)
 {
-#ifdef BBGE_BUILD_UNIX  // any case is fine if not Linux.
+#if defined(BBGE_BUILD_UNIX) && !defined(__MORPHOS__)  // any case is fine if not Linux.
 	int rc = 1;
 	char *buf = (char *) alloca(strlen(_buf) + 1);
 	strcpy(buf, _buf);
@@ -1280,9 +1288,11 @@ void Core::init()
 #endif
 #ifdef BBGE_BUILD_SDL
 #ifndef BBGE_BUILD_SDL2
+#ifndef __MORPHOS__
 	// Disable relative mouse motion at the edges of the screen, which breaks
 	// mouse control for absolute input devices like Wacom tablets and touchscreens.
 	SDL_putenv((char *) "SDL_MOUSE_RELATIVE=0");
+#endif
 #endif
 
 	if((SDL_Init(0))==-1)
@@ -1936,7 +1946,7 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 	//SDL_putenv("SDL_VIDEO_WINDOW_POS=400,300");
 
 #ifndef BBGE_BUILD_SDL2
-#if !defined(BBGE_BUILD_MACOSX)
+#if !defined(BBGE_BUILD_MACOSX) && !defined(__MORPHOS__)
 	// have to cast away constness, since SDL_putenv() might be #defined to
 	//  putenv(), which takes a (char *), and freaks out newer GCC releases
 	//  when you try to pass a (const!) string literal here...  --ryan.
@@ -2797,7 +2807,11 @@ std::string getScreenshotFilename()
 	while (true)
 	{
 		std::ostringstream os;
+#ifdef __MORPHOS__
 		os << core->getUserDataFolder() << "/screenshots/screen" << screenshotNum << ".tga";
+#else
+		os << core->getUserDataFolder() << "screenshots/screen" << screenshotNum << ".tga";
+#endif
 		screenshotNum ++;
         std::string str(os.str());
 		if (!core->exists(str))  // keep going until we hit an unused filename.
@@ -4264,7 +4278,7 @@ void Core::shutdownInputLibrary()
 void Core::shutdownJoystickLibrary()
 {
 	if (joystickEnabled) {
-		joystick.shutdown();
+		joystick.shut_down();
 #ifdef BBGE_BUIDL_SDL
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 #endif
@@ -4293,12 +4307,12 @@ void Core::clearRenderObjects()
 	}
 }
 
-void Core::shutdown()
+void Core::shut_down()
 {
 	// pop all the states
 
 
-	debugLog("Core::shutdown");
+	debugLog("Core::shut_down");
 	shuttingDown = true;
 
 	debugLog("Shutdown Joystick Library...");
@@ -4415,7 +4429,15 @@ CountedPtr<Texture> Core::findTexture(const std::string &name)
 // This handles unix/win32 relative paths: ./rel/path
 // Unix abs paths: /home/user/...
 // Win32 abs paths: C:/Stuff/.. and also C:\Stuff\...
+#ifndef __MORPHOS__
 #define ISPATHROOT(x) (x[0] == '.' || x[0] == '/' || ((x).length() > 1 && x[1] == ':'))
+#else
+/* On MorphOS we use only one absoulte path "PROGDIR:", 
+ * so we check only against it. Also as MorphOS is case-insensitive we also
+ * check for lowercase "progdir:" as it can be returned from OS.
+ */
+#define ISPATHROOT(x)  ((strncmp("PROGDIR:", x.c_str(), strlen("PROGDIR:")) == 0) || (strncmp("progdir:", x.c_str(), strlen("progdir:")) == 0))
+#endif
 
 std::string Core::getTextureLoadName(const std::string &texture)
 {
@@ -4671,7 +4693,11 @@ int Core::getVirtualHeight()
 // longer needed.
 unsigned char *Core::grabScreenshot(int x, int y, int w, int h)
 {
-#ifdef BBGE_BUILD_OPENGL
+/*
+ * Turned off on MorphOS as glReadPixels() seems to be broken. Or I just don't
+ * know how to use it. Or both.
+ */
+#if defined(BBGE_BUILD_OPENGL) && !defined(__MORPHOS__)
 
 	unsigned char *imageData;
 
@@ -5053,7 +5079,9 @@ int Core::zgaSave(	const char	*filename,
 
 
 
+#if BBGE_BUILD_VFS
 #include "ttvfs_zip/VFSZipArchiveLoader.h"
+#endif
 
 void Core::setupFileAccess()
 {
