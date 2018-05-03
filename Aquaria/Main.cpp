@@ -30,6 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#include <shellapi.h>
 #endif
 
+#ifdef __MORPHOS__
+int __stack = 1048576;
+#endif
 
 static void MakeRan(void)
 {
