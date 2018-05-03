@@ -13,6 +13,42 @@
 #define BBGE_BUILD_VFS 1
 #define BBGE_BUILD_SDL2 1
 
+#endif /* BBGE_SKIP_CONFIG_HEADERS */
+
+#ifdef __MORPHOS__
+
+#ifndef BBGE_BUILD_SDL
+#define BBGE_BUILD_SDL 1
 #endif
 
+#ifndef BBGE_BUILD_FRAMEBUFFER
+#define BBGE_BUILD_FRAMEBUFFER 1
 #endif
+
+#ifdef BBGE_BUILD_SHADERS
+#undef BBGE_BUILD_SHADERS
+#endif
+
+#ifndef BBGE_BUILD_OPENGL
+#define BBGE_BUILD_OPENGL 1
+#endif
+
+#ifdef BBGE_BUILD_OPENGL_DYNAMIC
+#undef BBGE_BUILD_OPENGL_DYNAMIC
+#endif
+
+#ifndef BBGE_BUILD_FMOD_OPENAL_BRIDGE
+#define BBGE_BUILD_FMOD_OPENAL_BRIDGE 1
+#endif
+
+#ifndef BBGE_BUILD_ACHIEVEMENTS_INTERNAL
+#define BBGE_BUILD_ACHIEVEMENTS_INTERNAL
+#endif
+
+#ifdef BBGE_BUILD_SDL2
+#undef BBGE_BUILD_SDL2
+#endif
+
+#endif /* __MORPHOS__ */
+
+#endif /* __BBGE_COMPILE_CONFIG_H__ */

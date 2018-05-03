@@ -93,7 +93,7 @@ public:
 	void reset();
 	void collectGarbage();
 	int gcGetStats();
-	void shutdown();
+	void shut_down();
 
 	Script *openScript(const std::string &file, bool ignoremissing = false);
 	void closeScript(Script *script);

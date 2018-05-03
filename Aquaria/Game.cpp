@@ -10862,7 +10862,7 @@ void Game::removeState()
 	avatar = 0;
 	//items.clear();
 #ifdef AQUARIA_BUILD_SCENEEDITOR
-	sceneEditor.shutdown();
+	sceneEditor.shut_down();
 #endif
 
 	cameraFollow = 0;

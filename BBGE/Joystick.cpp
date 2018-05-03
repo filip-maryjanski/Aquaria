@@ -239,7 +239,7 @@ void Joystick::init(int stick)
 #endif
 }
 
-void Joystick::shutdown()
+void Joystick::shut_down()
 {
 #if defined(__LINUX__) && !defined(BBGE_BUILD_SDL2)
 	if (eventfd >= 0) {

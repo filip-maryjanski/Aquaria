@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef BBGE_SHADER_H
 #define BBGE_SHADER_H
 
+#ifdef __MORPHOS__
+#undef bind
+#endif
+
 #include "Base.h"
 #include "ScriptObject.h"
 

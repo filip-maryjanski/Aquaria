@@ -3391,8 +3391,10 @@ typedef unsigned short GLhalfNV;
 typedef signed __int64 GLint64EXT;
 typedef unsigned __int64 GLuint64EXT;
 #else
-typedef signed long long GLint64EXT;
+#ifndef __MORPHOS__
 typedef unsigned long long GLuint64EXT;
+#endif
+typedef signed long long GLint64EXT;
 #endif
 #endif
 

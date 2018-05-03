@@ -45,10 +45,14 @@
 #endif
 #define VFS_STACK_ALLOC(size) alloca(size)
 #define VFS_STACK_FREE(ptr)   /* no need to free anything here */
-// Fail-safe:
-//#define VFS_STACK_ALLOC(size) malloc(size)
-//#define VFS_STACK_FREE(ptr)  free(ptr)
 
+#ifdef __MORPHOS__
+// Fail-safe:
+#	undef VFS_STACK_ALLOC
+#	undef VFS_STACK_FREE
+#	define VFS_STACK_ALLOC(size) malloc(size)
+#	define VFS_STACK_FREE(ptr)  free(ptr)
+#endif
 
 #include <string.h>
 #include <string>

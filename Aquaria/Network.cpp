@@ -166,7 +166,7 @@ static void init()
 	}
 }
 
-void shutdown()
+void shut_down()
 {
 	if(netUp)
 	{

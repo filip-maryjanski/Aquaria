@@ -70,7 +70,7 @@ char *vfgets(char *str, int num, VFILE *vf)
         if(!vf->read(&c, 1))
             break;
         *s++ = c;
-        if(c == '\n' || c == '\r')
+        if(c == '\n')
             break;
     }
 
@@ -96,13 +96,13 @@ long int vftell(VFILE *vf)
 InStream::InStream(const std::string& fn)
 : std::istringstream()
 {
-    open(fn.c_str());
+    this->open(fn.c_str());
 }
 
 InStream::InStream(const char *fn)
 : std::istringstream()
 {
-    open(fn);
+    this->open(fn);
 }
 
 bool InStream::open(const char *fn)

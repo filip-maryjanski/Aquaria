@@ -10,7 +10,7 @@
 //#include <stdio.h>
 
 
-#if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
+#if !defined(_WIN32) && defined(VFS_IGNORE_CASE) && !defined(__MORPHOS__)
 
 #include <dirent.h>
 
@@ -98,7 +98,7 @@ File *DiskLoader::Load(const char *fn, const char * /*ignored*/)
 
     DiskFile *vf = NULL;
 
-#if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
+#if !defined(_WIN32) && defined(VFS_IGNORE_CASE) && !defined(__MORPHOS__)
     size_t s = strlen(fn);
     char *t = (char*)VFS_STACK_ALLOC(s+1);
     memcpy(t, fn, s+1); // copy terminating '\0' as well
@@ -119,7 +119,7 @@ Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
 
     DiskDir *ret = NULL;
 
-#if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
+#if !defined(_WIN32) && defined(VFS_IGNORE_CASE) && !defined(__MORPHOS__)
     size_t s = strlen(fn);
     char *t = (char*)VFS_STACK_ALLOC(s+1);
     memcpy(t, fn, s+1); // copy terminating '\0' as well
@@ -127,11 +127,13 @@ Dir *DiskLoader::LoadDir(const char *fn, const char * /*ignored*/)
         fn = &t[0];
 #endif
 
+#ifndef __MORPHOS__
     assert(getRoot()->_getDirEx(fn, fn, false, false, false).first == NULL); // makes no sense to fire up the loader if it's already in the tree
+#endif
 
     ret = safecastNonNull<DiskDir*>(getRoot()->_createAndInsertSubtree(fn));
 
-#if !defined(_WIN32) && defined(VFS_IGNORE_CASE)
+#if !defined(_WIN32) && defined(VFS_IGNORE_CASE)  && !defined(__MORPHOS__)
     VFS_STACK_FREE(t);
 #endif
 

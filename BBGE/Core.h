@@ -783,7 +783,7 @@ class Joystick
 public:
 	Joystick();
 	void init(int stick=0);
-	void shutdown();
+	void shut_down();
 	//Ranges from 0 to 65535 (full speed).
 	void rumble(float leftMotor, float rightMotor, float time);
 	void update(float dt);
@@ -1001,7 +1001,7 @@ public:
 
 	void resetCamera();
 
-	virtual void shutdown();
+	virtual void shut_down();
 
 	void main(float runTime = -1); // can use main 
 

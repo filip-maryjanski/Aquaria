@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SIMPLEISTRINGSTREAM_H
 #define SIMPLEISTRINGSTREAM_H
 
+#if __MORPHOS__
+#define strtof(a, b) ((float)strtod(a, b))
+#endif
+
 /*
  * This class implements a lightweight version of the std::istringstream
  * class used for parsing strings.  std::istringstream (like many STL

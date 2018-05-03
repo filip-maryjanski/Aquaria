@@ -210,7 +210,11 @@ void StatsAndAchievements::RunFrame()
 
 		unsigned char *buf = new unsigned char[max_achievements];
 		size_t br = 0;
+#ifdef __MORPHOS__
+		fname = (core->getUserDataFolder() + "achievements.bin");
+#else
 		fname = (core->getUserDataFolder() + "/achievements.bin");
+#endif
 		FILE *u = fopen(fname.c_str(), "rb");
 		if (u == NULL)
 			statsValid = true;  // nothing to report.
@@ -857,7 +861,11 @@ void StatsAndAchievements::StoreStatsIfNecessary()
 		// file replacement.  Will this work on Windows and MacOS?
 		// Please advise.  --achurch
 
+#ifdef __MORPHOS__
+		const std::string fname(core->getUserDataFolder() + "achievements.bin");
+#else
 		const std::string fname(core->getUserDataFolder() + "/achievements.bin");
+#endif
 		FILE *io = fopen(fname.c_str(), "wb");
 		if (io == NULL)
 			return;

@@ -2911,7 +2911,7 @@ void SceneEditor::cloneSelectedElement()
 	}
 }
 
-void SceneEditor::shutdown()
+void SceneEditor::shut_down()
 {
 	clearActions();
 	text = 0;
@@ -3535,7 +3535,11 @@ void SceneEditor::dumpObs()
 		if(tv.y == 0)
 			break;
 	}
+#ifdef __MORPHOS__
+	std::string outfn = dsq->getUserDataFolder() + "griddump-" + game->sceneName + ".tga";
+#else
 	std::string outfn = dsq->getUserDataFolder() + "/griddump-" + game->sceneName + ".tga";
+#endif
 	core->tgaSave(outfn.c_str(), MAX_GRID, MAX_GRID, 32, data);
 	dsq->screenMessage("Saved grid image to " + outfn);
 }

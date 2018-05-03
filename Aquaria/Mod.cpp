@@ -21,11 +21,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DSQ.h"
 #include "Game.h"
 
+#ifndef __MORPHOS__
 static std::string baseModPath = "./_mods/";
+#else
+static std::string baseModPath = "PROGDIR:_mods/";
+#endif
 
 void refreshBaseModPath()
 {
-#if defined(BBGE_BUILD_UNIX)
+#if defined(BBGE_BUILD_UNIX) && !defined(__MORPHOS__)
 	baseModPath = dsq->getUserDataFolder() + "/_mods/";
 #endif
 }
@@ -48,7 +52,7 @@ Mod::~Mod()
 queue for actual stop and recache
 which happens in game::applystate
 */
-void Mod::shutdown()
+void Mod::shut_down()
 {
 	shuttingDown = true;
 }

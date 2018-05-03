@@ -1,6 +1,10 @@
 #ifndef __gl_h_
 #define __gl_h_
 
+#ifdef __MORPHOS__
+#include <tgl/gl.h>
+#else
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1643,4 +1647,7 @@ WINGDIAPI void APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei hei
 }
 #endif
 
+#endif /* __MORPHOS__ */
+
 #endif /* __gl_h_ */
+

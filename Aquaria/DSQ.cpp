@@ -924,19 +924,33 @@ This build is not yet final, and as such there are a couple things lacking. They
 	// do copy stuff
 #ifdef BBGE_BUILD_UNIX
 	std::string fn;
+#ifdef __MORPHOS__
+	fn = getPreferencesFolder() + userSettingsFilename;
+#else
 	fn = getPreferencesFolder() + "/" + userSettingsFilename;
+#endif
 	if (!exists(fn))
 		Linux_CopyTree(core->adjustFilenameCase(userSettingsFilename).c_str(), core->adjustFilenameCase(fn).c_str());
 
+#ifdef __MORPHOS__
+	fn = getUserDataFolder() + "_mods";
+#else
 	fn = getUserDataFolder() + "/_mods";
+#endif
 	if (!exists(fn))
 		Linux_CopyTree(core->adjustFilenameCase("_mods").c_str(), core->adjustFilenameCase(fn).c_str());
 #endif
 
+#ifdef __MORPHOS__
+	createDir(getUserDataFolder() + "save");
+	createDir(getUserDataFolder() + "_mods");
+	createDir(getUserDataFolder() + "screenshots");
+#else
 	createDir(getUserDataFolder());
 	createDir(getUserDataFolder() + "/save");
 	createDir(getUserDataFolder() + "/_mods");
 	createDir(getUserDataFolder() + "/screenshots");
+#endif
 
 	addStateInstance(game = new Game);
 	addStateInstance(new GameOver);
@@ -956,7 +970,6 @@ This build is not yet final, and as such there are a couple things lacking. They
 	//addStateInstance(new SCLogo);
 	//addStateInstance(new IntroText);
 	//addStateInstance(new Intro);
-
 	//packReadInfo("mus.dat");
 
 	this->setBaseTextureDirectory("gfx/");
@@ -970,7 +983,6 @@ This build is not yet final, and as such there are a couple things lacking. They
 	int joystickMode = 0;
 	int dsq_filter = 0;
 	voiceOversEnabled = true;
-
 
 	//core->messageBox("info", "loading user settings");
 	user.load(false);
@@ -2289,13 +2301,13 @@ void DSQ::playPositionalSfx(const std::string &name, const Vector &position, flo
 		holder->linkSound(c);
 }
 
-void DSQ::shutdown()
+void DSQ::shut_down()
 {
 	mod.stop();
 
-	Network::shutdown();
+	Network::shut_down();
 
-	scriptInterface.shutdown();
+	scriptInterface.shut_down();
 	precacher.clean();
 	/*
 	if (title)delete title;
@@ -2395,10 +2407,10 @@ void DSQ::shutdown()
 	cursor = 0;
 	tfader = 0;
 
-	continuity.shutdown();
+	continuity.shut_down();
 
 	//script.shutdown();
-	Core::shutdown();
+	Core::shut_down();
 }
 
 void DSQ::setTexturePointers()
@@ -3025,7 +3037,7 @@ void DSQ::title(bool fade)
 	
 	if (mod.isActive())
 	{
-		mod.shutdown();
+		mod.shut_down();
 	}
 
 	// Will be re-loaded on demand
@@ -4902,7 +4914,11 @@ void DSQ::clearEntities()
 
 std::string DSQ::getSaveDirectory()
 {
+#ifdef __MORPHOS__
+	return getUserDataFolder() + "save";
+#else
 	return getUserDataFolder() + "/save";
+#endif
 }
 
 ParticleEffect *DSQ::spawnParticleEffect(const std::string &name, Vector position, float rotz, float t, int layer, float follow)
