@@ -3210,7 +3210,12 @@ void DSQ::doSaveSlotMenu(SaveSlotMode ssm, const Vector &position)
 {
 	int scrShotWidth = 0, scrShotHeight = 0;
 	unsigned char *scrShotData = 0;
-
+/*
+ * Grabing screenshots is disabled on MorphOS due to bug (look at comment above
+ * Core.cpp - Core::grabScreenshot() for details) so I disabled creating
+ * fake screenshots to speedup saving a little bit.
+ */
+#ifndef __MORPHOS__
 	if (ssm == SSM_SAVE && user.video.saveSlotScreens)
 	{
 		prepScreen(1);
@@ -3235,6 +3240,7 @@ void DSQ::doSaveSlotMenu(SaveSlotMode ssm, const Vector &position)
 
 		prepScreen(0);
 	}
+#endif /* __MORPHOS__ */
 
 	saveSlotMode = SSM_NONE;
 	
